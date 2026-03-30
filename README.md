@@ -8,9 +8,16 @@ The application requires NodeJS to run.
 
 In the terminal, change directory to the project root and run:
 
+### NPM
 ```shell
 cd nodejs
 npm install
+```
+
+### Yarn
+```shell
+cd nodejs
+yarn install
 ```
 
 ## Running
