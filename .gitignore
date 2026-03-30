@@ -129,7 +129,10 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
-data.json
+# State file
+state.json
+
+# Output directory
 output/
 
 .vscode/
