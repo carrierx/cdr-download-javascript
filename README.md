@@ -22,7 +22,7 @@ yarn install
 
 ## Running
 
-In the `nodejs` directory, run the following
+In the project root directory, run the following
 
 ```shell
 node cxGetCdrs.js <latest | range> <options> outputFileName.csv
@@ -44,7 +44,7 @@ The `latest` command tells the downloader to get the records since the last time
 | -e *&lt;date&gt;* | --end *&lt;date&gt;* | Optional | The end date (and optionally time), exclusive, in ISO 8601 format - YYYY-MM-DD[THH:MM:SS]. Dates and times are UTC. **Default - now**. |
 | -f  *&lt;format&gt;*| --format *&lt;format&gt;* | Optional | The output format, `csv` or `json`. **Default - `csv`** |
 | -o | --overwrite | Optional | Overwrite the output file. By default the app will not overwrite the output file. |
-| -y | --type | Optional | The type of records to get. Choices: `call`, `conference`, `message`. **Default - `call`** |
+| -y | --type | Optional | The type of records to get. Choices: [`call`](https://docs.carrierx.com/voice/core-api/calls/call-detail-record/), [`conference`](https://docs.carrierx.com/conference/conf-v2-api/calls/call/), [`message`](https://docs.carrierx.com/voice/core-api/sms/sms-detail-record/). **Default - `call`** |
 | -h | --help | Optional | Display command help |
 
 #### File name - Required argument
@@ -64,7 +64,7 @@ __NOTE__ State is not saved with the `range` command. If you use the `range` com
 | -e *&lt;date&gt;* | --end *&lt;date&gt;* | Optional | The end date (and optionally time), exclusive, in ISO 8601 format - YYYY-MM-DD[THH:MM:SS]. Dates and times are UTC. **Default - now**. |
 | -f  *&lt;format&gt;*| --format *&lt;format&gt;* | Optional | The output format, `csv` or `json`. **Default - `csv`** |
 | -o | --overwrite | Optional | Overwrite the output file. By default the app will not overwrite the output file. |
-| -y | --type | Optional | The type of records to get. Choices: `call`, `conference`, `message`. **Default - `call`** |
+| -y | --type | Optional | The type of records to get. Choices: [`call`](https://docs.carrierx.com/voice/core-api/calls/call-detail-record/), [`conference`](https://docs.carrierx.com/conference/conf-v2-api/calls/call/), [`message`](https://docs.carrierx.com/voice/core-api/sms/sms-detail-record/). **Default - `call`** |
 | -h | --help | Optional | Display command help |
 
 #### File name - Required argument
