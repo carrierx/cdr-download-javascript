@@ -12,15 +12,15 @@ const CDR_URL_CALLS = `${BASE_URL}/calls/call_drs`;
 const CDR_URL_CONFERENCE = `${BASE_URL}/app/conference/calls`;
 const CDR_URL_MESSAGE = `${BASE_URL}/sms/message_drs`;
 const PAGE_SIZE = 1_000
-const DEFAULT_STATE_DATA_FILE = './state.json'
+const DEFAULT_STATE_FILE = './state.json'
 
 
 class CdrGetter {
   #begin;
   #csvWriter;
   #command;
-  #stateData;
-  #stateDataFile;
+  #state;
+  #stateFile;
   #end;
   #filename;
   #format;
@@ -32,7 +32,7 @@ class CdrGetter {
   #url;
 
   constructor(command, filename, options) {
-    this.#stateData = {
+    this.#state = {
       call_sid: null,
       conference_sid: null,
       message_sid: null,
@@ -58,7 +58,7 @@ class CdrGetter {
     this.#format = options.format;
     this.#nextUrl = null;
     this.#overwrite = options.overwrite;
-    this.#stateDataFile = options.dataFile;
+    this.#stateFile = options.stateFile;
     switch (this.#type) {
       case 'conference':
         this.#url = CDR_URL_CONFERENCE;
@@ -99,12 +99,12 @@ class CdrGetter {
     return Boolean(date.match(/[+-][\d][\d]:[\d][\d]$/) || date.match(/Z$/));
   }
 
-  #loadStateData = async () => {
+  #loadState = async () => {
     if (this.#command === 'latest') {
       try {
-        this.#stateData = await jsonfile.readFile(this.#stateDataFile);
+        this.#state = await jsonfile.readFile(this.#stateFile);
       } catch (error) {
-        this.#stateData = {
+        this.#state = {
           call_sid: null,
           conference_sid: null,
           message_sid: null,
@@ -113,11 +113,11 @@ class CdrGetter {
     }
   }
 
-  #saveStateData = async () => {
+  #saveState = async () => {
     if (this.#command === 'latest') {
       await jsonfile.writeFile(
-        this.#stateDataFile,
-        this.#stateData,
+        this.#stateFile,
+        this.#state,
         {spaces: 2}
       );
     }
@@ -125,23 +125,23 @@ class CdrGetter {
 
   #getLastSid = () => {
     if (this.#type === 'call') {
-      return this.#stateData.call_sid;
+      return this.#state.call_sid;
     } else if (this.#type === 'conference') {
-      return this.#stateData.conference_sid;
+      return this.#state.conference_sid;
     } else if (this.#type === 'message') {
-      return this.#stateData.message_sid;
+      return this.#state.message_sid;
     }
   }
 
   #setLastSid = (item) => {
     if (this.#type === 'call') {
-      this.#stateData.call_sid = item?.dr_sid;
+      this.#state.call_sid = item?.dr_sid;
     } else if (this.#type === 'conference') {
-      this.#stateData.conference_sid = item?.call_sid;
+      this.#state.conference_sid = item?.call_sid;
     } else if (this.#type === 'message') {
-      this.#stateData.message_sid = item?.dr_sid;
+      this.#state.message_sid = item?.dr_sid;
     }
-    this.#saveStateData();
+    this.#saveState();
   }
 
   #isBeyondEnd = (cdr) => {
@@ -225,7 +225,7 @@ class CdrGetter {
   }
 
   get = async () => {
-    await this.#loadStateData();
+    await this.#loadState();
     let page = 0;
     let willBreak = false;
     while (true) {
@@ -287,8 +287,8 @@ optionOverwrite = new Option('-o, --overwrite', 'Overwrite the output file. By d
 optionType = new Option('-y, --type <type>', 'The type of CDR to get. Default is call.')
   .choices(['call', 'conference', 'message'])
   .default('call');
-optionDataFile = new Option('-d, --data-file <data_file>', 'The file in which to store the last SID for the next run. Default is ' + DEFAULT_STATE_DATA_FILE)
-  .default(DEFAULT_STATE_DATA_FILE);
+optionStateFile = new Option('-s, --state-file <state_file>', 'The file in which to store the last SID for the next run. Default is ' + DEFAULT_STATE_FILE)
+  .default(DEFAULT_STATE_FILE);
 argFilename = new Argument('<filename>', 'File where the CDRs should be written');
 
 const latestCommand = new Command('latest')
@@ -298,7 +298,7 @@ const latestCommand = new Command('latest')
   .addOption(optionFormat)
   .addOption(optionOverwrite)
   .addOption(optionType)
-  .addOption(optionDataFile)
+  .addOption(optionStateFile)
   .addArgument(argFilename)
   .action((filename, options) => main('latest', filename, options));
 
